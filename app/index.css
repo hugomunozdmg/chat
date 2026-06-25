@@ -1,5 +1,31 @@
 .container {
-    border: 1px solid black;
-    padding: 1rem;
-    margin: 1rem;
+  border: 1px solid black;
+  padding: 1rem;
+  margin: 1rem;
+  width: 30rem;
+}
+
+.sender {
+  background-color: rgb(149, 255, 149);
+  width: fit-content;
+  margin: 0.2rem;
+  padding: 0.4rem;
+  border-radius: 0.2rem;
+}
+
+.receiver {
+  background-color: rgb(208, 244, 208);
+  width: fit-content;
+  margin: 0.2rem;
+  padding: 0.4rem;
+  border-radius: 0.2rem;
+}
+
+.c-sender {
+    display: flex;
+    justify-content: end;
+}
+
+#messages {
+    width: 20rem;
 }

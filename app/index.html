@@ -1,120 +1,144 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="./index.css">
-</head>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
 
-<body>
-
+  <body>
     <div class="container">
-        <h3>Register</h3>
-        <label for="">Username:</label>
-        <input type="text" id="username-input">
-        <button onclick="registerUser()">send</button>
+      <h3>Register</h3>
+      <label for="">Username:</label>
+      <input type="text" id="username-input" />
+      <button onclick="registerUser()">send</button>
+    </div>
+    <div class="container">
+      <h3>Login</h3>
+      <label for="">Username:</label>
+      <input type="text" id="login-input" />
+      <button onclick="doLogin()">send</button>
     </div>
 
     <div class="container">
-        <h3>Users list</h3>
-        <div id="users-list"></div>
+      <h3>Users list</h3>
+      <div id="users-list"></div>
     </div>
 
     <div class="container">
-        <h3 id="user-name"></h3>
-        <div class="container">
-            <h4 id="selected-user"></h4>
-            <div id="messages"></div>
-            <div>
-                <input type="text" id="message-input">
-                <button onclick="sendMessage()">send</button>
-            </div>
+      <h3 id="user-name"></h3>
+      <div>
+        <h4 id="selected-user"></h4>
+        <div id="messages"></div>
+        <div>
+          <input type="text" id="message-input" />
+          <button onclick="sendMessage()">send</button>
         </div>
+      </div>
     </div>
-
 
     <script>
-        const url = "http://localhost:3000"
-        let loginUser = ""
-        let selectedUser = ""
+      const url = "http://localhost:3000";
+      let loginUser = "";
+      let selectedUser = "";
 
-        getUsers()
+      getUsers();
 
-        function registerUser() {
-            loginUser = document.getElementById("username-input").value
-            fetch(url + "/register-user", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ user: loginUser })
-            }).then(res => res.json()).then(data => {
-                document.getElementById("user-name").innerText = data.user
-            })
-        }
+      function registerUser() {
+        loginUser = document.getElementById("username-input").value;
+        fetch(url + "/register-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user: loginUser }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("user-name").innerText = data.user;
+          });
+      }
 
-        function getMessages() {
-            setInterval(() => {
-                fetch(url + "/messages", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        user1: loginUser,
-                        user2: selectedUser
-                    })
-                }).then(res => res.json()).then(data => {
-                    let messagesText = ""
-                    data.messages.forEach(m => {
-                        messagesText += `<p>${m.text}</p>`
-                    })
-                    document.getElementById("messages").innerHTML = messagesText
-                })
-            }, 1000)
-        }
+      function doLogin() {
+        loginUser = document.getElementById("login-input").value;
+        fetch(url + "/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user: loginUser }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("user-name").innerText = data.user;
+          });
+      }
 
+      function getMessages() {
+        setInterval(() => {
+          fetch(url + "/messages", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user1: loginUser,
+              user2: selectedUser,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              let messagesText = "";
+              data.messages.forEach((m) => {
+                messagesText += `<div class='${m.user1 == loginUser ? "c-sender" : "c-receiver"}'><p class='${m.user1 == loginUser ? "sender" : "receiver"}'>${m.text}</p></div>`;
+              });
+              document.getElementById("messages").innerHTML = messagesText;
+            });
+        }, 1000);
+      }
 
-        function sendMessage() {
-            const message = document.getElementById("message-input").value
-            console.log(message)
-            fetch(url + "/register-message", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: {
-                        text: message,
-                        user1: loginUser,
-                        user2: selectedUser
-                    }
-                })
-            }).then(res => res.json()).then(data => {
-                console.log(data)
-            })
-        }
+      function sendMessage() {
+        const message = document.getElementById("message-input").value;
+        console.log(message);
+        fetch(url + "/register-message", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: {
+              text: message,
+              user1: loginUser,
+              user2: selectedUser,
+            },
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+          });
+      }
 
-        function selectUser(user) {
-            console.log(user)
-            selectedUser = user
-            document.getElementById("selected-user").innerText = user
-            getMessages()
-        }
+      function selectUser(user) {
+        console.log(user);
+        selectedUser = user;
+        document.getElementById("selected-user").innerText = user;
+        getMessages();
+      }
 
-
-        function getUsers() {
-            fetch(url + "/users").then(res => res.json()).then(data => {
-                let usersList
-                data.users.forEach(u => usersList += `<button onclick="selectUser('${u}')">${u}</button>`)
-                document.getElementById("users-list").innerHTML = usersList
-            })
-        }
-
-
+      function getUsers() {
+        fetch(url + "/users")
+          .then((res) => res.json())
+          .then((data) => {
+            let usersList;
+            data.users.forEach(
+              (u) =>
+                (usersList += `<button onclick="selectUser('${u}')">${u}</button>`),
+            );
+            document.getElementById("users-list").innerHTML = usersList;
+          });
+      }
     </script>
-</body>
-
+  </body>
 </html>
